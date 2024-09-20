@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Detector</title>
+</head>
+<body>
+    <h1>Real-Time Emotion Detector</h1>
+    <div>
+        <img id="videoFeed" src="{{ url_for('video_feed') }}" width="640" height="480">
+    </div>
+    <div>
+        <button id="pause">Pause</button>
+        <button id="snapshot">Take Snapshot</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const videoElement = document.getElementById('videoFeed');
+            let isPaused = false;
+
+            document.getElementById('pause').addEventListener('click', function () {
+                if (!isPaused) {
+                    videoElement.src = '';
+                    this.textContent = 'Resume';
+                } else {
+                    videoElement.src = '{{ url_for("video_feed") }}';
+                    this.textContent = 'Pause';
+                }
+                isPaused = !isPaused;
+            });
+
+            document.getElementById('snapshot').addEventListener('click', function () {
+                const snapshotCanvas = document.createElement('canvas');
+                snapshotCanvas.width = videoElement.width;
+                snapshotCanvas.height = videoElement.height;
+                const ctx = snapshotCanvas.getContext('2d');
+                ctx.drawImage(videoElement, 0, 0, snapshotCanvas.width, snapshotCanvas.height);
+                const dataURL = snapshotCanvas.toDataURL('image/png');
+
+                const link = document.createElement('a');
+                link.href = dataURL;
+                link.download = 'snapshot.png';
+                link.click();
+            });
+        });
+    </script>
+</body>
+</html>
